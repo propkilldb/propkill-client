@@ -119,16 +119,20 @@ end
 
 function PK.Client.HideViewmodel()
 	if PK_GetConfig("HideViewmodel") then
-		for i = 0, 2 do
-			LocalPlayer():DrawViewModel(false, i)
+		local function HideViewmodel()
+			for i = 0, 2 do
+				LocalPlayer():DrawViewModel(false, i)
+			end
 		end
+		//HideViewmodel()
+		hook.Add("PreDrawViewModel", "PK_Hideviewmodel", HideViewmodel)
 	else
 		for i = 0, 2 do
 			LocalPlayer():DrawViewModel(true, i)
 		end
+		hook.Remove("PreDrawViewModel", "PK_Hideviewmodel")
 	end
 end
-
 
 -- Autorun all enabled settings on start
 

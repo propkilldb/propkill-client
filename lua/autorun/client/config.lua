@@ -12,10 +12,8 @@ PKConfig = {}
 if file.Exists("pkr_cl_settings.txt", "DATA") then
 	pk_config_file = file.Read("pkr_cl_settings.txt", "DATA")
 	PKConfig = util.JSONToTable(pk_config_file)
-	print("what")
 	PrintTable(PKConfig)
 else
-	print("what the fuck")
 	PKConfig = {
 		RemoveSkybox = false,
 		RoofTiles = false,
