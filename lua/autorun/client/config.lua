@@ -22,7 +22,8 @@ else
 		CustomFOV = 100,
 		UseCustomViewmodelOffset = false,
 		CustomViewmodelOffset = Vector(1, 1, 1),
-		HideViewmodel = false
+		HideViewmodel = false,
+		EnableBhop = true
 	}
 	PK_SaveConfig()
 end
