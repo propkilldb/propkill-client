@@ -23,7 +23,8 @@ else
 		UseCustomViewmodelOffset = false,
 		CustomViewmodelOffset = Vector(1, 1, 1),
 		HideViewmodel = false,
-		EnableBhop = true
+		EnableBhop = true,
+		TrackPlayers = false
 	}
 	PK_SaveConfig()
 end

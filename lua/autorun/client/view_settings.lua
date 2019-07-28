@@ -82,12 +82,17 @@ end
 
 -- Use Custom FOV
 
+ViewPos = nil
+ViewAng = nil
+
 function PK.Client.UseCustomFOV()
 	if PK_GetConfig("UseCustomFOV") then
 		local function fov(ply, ori, ang, fov, nz, fz)
 			local view = {}
 			view.origin = ori
 			view.angles = ang
+			_G.ViewPos = ori
+			_G.ViewAng = ang
 			view.fov = PK_GetConfig("CustomFOV") or 100
 			return view
 		end
@@ -131,6 +136,56 @@ function PK.Client.HideViewmodel()
 			LocalPlayer():DrawViewModel(true, i)
 		end
 		hook.Remove("PreDrawViewModel", "PK_Hideviewmodel")
+	end
+end
+
+local function EternalSin( Freak, Trough, Peak )
+	local Diff = ( Peak -Trough )
+	local ActualTrough = ( Trough +Peak ) /2
+	local ActualPeak = ActualTrough +Diff
+	return TimedSin( Freak, ActualTrough, ActualPeak, 0 )
+end
+
+function PK.Client.TrackPlayers()
+	if PK_GetConfig("TrackPlayers") then
+		local function TrackPlayers()
+			cam.Start3D()
+			local BeamStart, Pulse  = _G.ViewPos + _G.ViewAng:Forward() * 50, EternalSin( 1, 1, 255 )
+			FriendsCol, AdminCol, PropCol = Color( 0, Pulse, 0 ), Color( Pulse, 0, 0 ), Color( Pulse, 200 -Pulse, 0 )
+			render.SetMaterial(Material("sprites/lookingat"))
+			for k,v in pairs(player.GetAll()) do
+				if !IsValid(v) then continue end
+				if v == LocalPlayer() or v:Team() == TEAM_UNASSIGNED then continue end
+				local Centre = v:LocalToWorld(v:OBBCenter())
+				local Col, OuterCol = PropCol, nil
+				local Dist = BeamStart:Distance( Centre )
+				local WidthUnclamped = Dist / 1200
+				local ArrowLength = -math.Clamp( Dist / ( WidthUnclamped * 10 ), 60, 120 ) --needs work
+				local Width = math.Clamp( WidthUnclamped, 0.5, 2 )
+				if (v:IsPlayer()) then
+					if ( !v:Alive() ) then continue end
+						//Col = team.GetColor( k )
+						if (v:GetFriendStatus() == "friend") then
+							OuterCol = FriendsCol
+						elseif ( v:IsAdmin() ) then
+							OuterCol = AdminCol
+						end
+						OuterCol = AdminCol
+						//else
+						//	Col = PropCol
+						//end
+						if (OuterCol) then
+							render.DrawBeam(Centre, BeamStart, Width / 0.6, ArrowLength, 0, OuterCol )
+						end
+						render.DrawBeam(Centre, BeamStart, Width, ArrowLength, 0, Col )
+					end
+				end
+			cam.End3D()
+		end
+		//HideViewmodel()
+		hook.Add("PostDrawHUD", "PK_TrackPlayers", TrackPlayers)
+	else
+		hook.Remove("PostDrawHUD", "PK_TrackPlayers")
 	end
 end
 
